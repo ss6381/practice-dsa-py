@@ -1,35 +1,27 @@
-package parenthesis
 
-type Stack struct {
-	items []rune
-}
+class Solution:
+	def is_valid_parenthesis(self, s):
+		stack = []
+		for c in s:
+			if c == '(':
+				stack.append(')')
+			elif c == '{':
+				stack.append('}')
+			elif c == '[':
+				stack.append(']')
+			elif len(stack) == 0 or stack.pop() != c:
+				return False
+		return len(stack) == 0
 
-func (s *Stack) push(b rune) {
-	s.items = append(s.items, b)
-}
-
-func (s *Stack) pop() rune {
-	last := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
-	return last
-}
-
-func (s *Stack) isEmpty() bool {
-	return len(s.items) == 0
-}
-
-func IsValid(s string) bool {
-	stack := Stack{}
-	for _, c := range s {
-		if c == '(' {
-			stack.push(')')
-		} else if c == '{' {
-			stack.push('}')
-		} else if c == '[' {
-			stack.push(']')
-		} else if stack.isEmpty() || stack.pop() != c {
-			return false
-		}
-	}
-	return stack.isEmpty()
-}
+if __name__ == '__main__':
+	s = Solution()
+	tests = [
+		'()', # True
+		'()[]{}', # True
+		'(]', # False
+		'([)]', # False
+		'{[]}', # True
+		'[[(]])', # False
+	]
+	for test in tests:
+		print(s.is_valid_parenthesis(test))

@@ -1,87 +1,68 @@
-package rottenoranges
-
-/*
+"""
 Argo AI - 1st round
 Duo - 1st round
-*/
-
-import "fmt"
-
-const (
-	freshOrangeInt  = 1
-	rottenOrangeInt = 2
-)
-
-type orange struct {
-	X int
-	Y int
-}
 
 // Given a grid of oranges (fresh, rotten, or none)
 // A fresh orange becomes rotten if it is neighboring a rotten orange, in the four grid directions
 // RETURN the number of "minutes" before all the fresh oranges are rotten
 // otherwise return -1 if there will always be some number of fresh oranges remaining in the grid
-func RottenOranges(grid [][]int, numIterations int, prevNumFreshOranges int) int {
-	rottenOranges, numFreshOranges := getOranges(grid)
-	if numFreshOranges == 0 {
-		fmt.Printf("No more fresh oranges remaining after %d minutes\n", numIterations)
-		return numIterations
-	}
+"""
 
-	if prevNumFreshOranges == numFreshOranges {
-		fmt.Printf("No solution found, %d fresh orange(s) remaining.\n", numFreshOranges)
-		return -1
-	}
+from enum import Enum
 
-	updatedRottenOranges := make([]orange, 0)
-	for _, rottenOrange := range rottenOranges {
-		freshNeighbors := getFreshNeighbors(grid, rottenOrange)
-		updatedRottenOranges = append(updatedRottenOranges, freshNeighbors...)
-	}
-	grid = updateGrid(grid, updatedRottenOranges)
-	return RottenOranges(grid, numIterations+1, numFreshOranges)
-}
+class OrangeState(Enum):
+	FRESH = 0
+	ROTTEN = 1
+	NONE = 2
 
-// RETURNS a slice of the locations of all of the rotten oranges,
-// and the number of fresh oranges remaining in the grid.
-func getOranges(grid [][]int) (rottenOrangesArray []orange, numFreshOranges int) {
-	for i := 0; i < len(grid); i++ {
-		for j := range grid[i] {
-			if grid[i][j] == rottenOrangeInt {
-				rottenOrangesArray = append(rottenOrangesArray, orange{X: i, Y: j})
-			} else if grid[i][j] == freshOrangeInt {
-				numFreshOranges++
-			}
-		}
-	}
-	return rottenOrangesArray, numFreshOranges
-}
+class Solution:
 
-// Checks the four directions for a given rotten orange location,
-// and RETURNS an updated slice of all of the "new" rotten oranges -
-//  (the fresh oranges that became rotten from neighboring rotten oranges)
-func getFreshNeighbors(grid [][]int, rottenOrange orange) []orange {
-	freshNeighbors := make([]orange, 0)
-	x := rottenOrange.X
-	y := rottenOrange.Y
-	if x < len(grid)-1 && grid[x+1][y] == freshOrangeInt {
-		// TODO: check for duplicates before appending to slice
-		freshNeighbors = append(freshNeighbors, orange{X: x + 1, Y: y})
-	} else if y < len(grid)-1 && grid[x][y+1] == freshOrangeInt {
-		freshNeighbors = append(freshNeighbors, orange{X: x, Y: y + 1})
-	} else if x > 0 && grid[x-1][y] == freshOrangeInt {
-		freshNeighbors = append(freshNeighbors, orange{X: x - 1, Y: y})
-	} else if y > 0 && grid[x][y-1] == freshOrangeInt {
-		freshNeighbors = append(freshNeighbors, orange{X: x, Y: y - 1})
-	}
-	return freshNeighbors
-}
+	def __init__(self, grid):
+		self.grid = grid
+		self.minutes = 0
+		self.fresh = 0
 
-// Updates the grid to include the new rotten oranges,
-// and RETURNS the updated grid
-func updateGrid(grid [][]int, rottenOranges []orange) [][]int {
-	for _, rottenOrange := range rottenOranges {
-		grid[rottenOrange.X][rottenOrange.Y] = rottenOrangeInt
-	}
-	return grid
-}
+	def rotten_oranges(self):
+		self.fresh = self.count_fresh_oranges()
+		if self.fresh == 0:
+			return 0
+
+		while self.fresh > 0:
+			self.rotten_neighbors()
+			self.minutes += 1
+
+		return self.minutes
+	
+	def count_fresh_oranges(self):
+		count = 0
+		for i in range(len(self.grid)):
+			for j in range(len(self.grid[i])):
+				if self.grid[i][j] == OrangeState.FRESH.value:
+					count += 1
+		return count
+	
+	def rotten_neighbors(self):
+		for i in range(len(self.grid)):
+			for j in range(len(self.grid[i])):
+				if self.grid[i][j] == OrangeState.ROTTEN.value:
+					if i > 0 and self.grid[i-1][j] == OrangeState.FRESH.value:
+						self.grid[i-1][j] = OrangeState.ROTTEN.value
+						self.fresh -= 1
+					if i < len(self.grid) - 1 and self.grid[i+1][j] == OrangeState.FRESH.value:
+						self.grid[i+1][j] = OrangeState.ROTTEN.value
+						self.fresh -= 1
+					if j > 0 and self.grid[i][j-1] == OrangeState.FRESH.value:
+						self.grid[i][j-1] = OrangeState.ROTTEN.value
+						self.fresh -= 1
+					if j < len(self.grid[i]) - 1 and self.grid[i][j+1] == OrangeState.FRESH.value:
+						self.grid[i][j+1] = OrangeState.ROTTEN.value
+						self.fresh -= 1
+
+if __name__ == '__main__':
+	tests = [
+		[[0, 1, 2], [0, 1, 2], [0, 1, 2]],
+		[[2, 1, 1],[1, 1, 0],[0, 0, 1]],
+	]
+	for grid in tests:
+		s = Solution(grid)
+		print(s.rotten_oranges())

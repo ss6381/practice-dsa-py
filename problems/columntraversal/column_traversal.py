@@ -1,6 +1,5 @@
-package columntraversal
-
-/*
+# Problem source: https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+"""
 Meta - 1st round
 *Input:* [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
 
@@ -28,28 +27,53 @@ Meta - 1st round
 [
   [3]
 ]
-*/
+"""
 
-type Node struct {
-	data  int
-	left  *Node
-	right *Node
-}
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-func ColumnOrderTraversal(root *Node) [][]int {
-	return helper(root, 0, [][]int{})
-}
 
-func helper(node *Node, currIndex int, result [][]int) [][]int {
-	if node != nil {
-		helper(node.left, currIndex-1, result)
-		helper(node.right, currIndex+1, result)
+import collections
 
-		if currIndex < 0 {
-			result = append([][]int{{node.data}}, result...)
-		} else if currIndex > 0 {
-			result = append(result, []int{node.data})
-		}
-	}
-	return result
-}
+class Solution:
+    
+    def vertical_traversal(self, root):
+        if not root:
+            return []
+        
+        column_items = collections.defaultdict(list)
+        queue = collections.deque([(0, root)])
+
+        min_column = float('inf')
+        max_column = float('-inf')
+
+        result = []
+
+        while queue:
+            column, node = queue.popleft()
+            column_items[column].append(node.val)
+
+            min_column = min(min_column, column)
+            max_column = max(max_column, column)
+
+            if node.left:
+                queue.append((column-1, node.left))
+            if node.right:
+                queue.append((column+1, node.right))
+
+        for level in range(min_column, max_column+1):
+            result.append(column_items[level])
+        
+        return result
+
+
+if __name__ == '__main}}':
+    tests = [
+        [3,9,8,4,0,1,7,None,None,None,2,5],
+    ]
+    for test in tests:
+        s = Solution()
+        print(s.vertical_traversal(test))

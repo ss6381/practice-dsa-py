@@ -1,31 +1,38 @@
-package dfs
+class TreeNode:
+	def __init__(self, x):
+		self.val = x
+		self.left = None
+		self.right = None
 
-type Node struct {
-	Value int
-	Left  *Node
-	Right *Node
-}
+class Solution:
+    
+	def dfs(self, node, result):
+		if not node:
+			return result
+		result.append(node.val)
+		result = self.dfs(node.left, result)
+		result = self.dfs(node.right, result)
+		return result
 
-func (n *Node) Insert(val int) {
-	if val < n.Value {
-		if n.Left == nil {
-			n.Left = &Node{Value: val}
-		}
-		n.Left.Insert(val)
-	} else if val > n.Value {
-		if n.Right == nil {
-			n.Right = &Node{Value: val}
-		}
-		n.Right.Insert(val)
-	}
-}
-
-func (n *Node) DepthFirstSearch(array []int) []int {
-	if n == nil {
-		return array
-	}
-	array = append(array, n.Value)
-	array = n.Left.DepthFirstSearch(array)
-	array = n.Right.DepthFirstSearch(array)
-	return array
-}
+	def dfs_iterative(self, node):
+		stack = []
+		stack.append(node)
+		while stack:
+			node = stack.pop()
+			print(node.val)
+			if node.right:
+				stack.append(node.right)
+			if node.left:
+				stack.append(node.left)
+	
+if __name__ == '__main__':
+	node = TreeNode(1)
+	node.left = TreeNode(2)
+	node.left.left = TreeNode(4)
+	node.left.right = TreeNode(5)
+	node.right = TreeNode(3)
+	node.right.left = TreeNode(6)
+	node.right.right = TreeNode(7)
+	s = Solution()
+	print(s.dfs(node, []))
+	# s.dfs_iterative(node)

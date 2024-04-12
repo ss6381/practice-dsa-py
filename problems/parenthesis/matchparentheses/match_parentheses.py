@@ -1,6 +1,4 @@
-package matchparentheses
-
-/*
+"""
 Snap - 1st Round
 Given a string that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.
 
@@ -39,54 +37,13 @@ output: "(a)()"
 //. if it is greater than 0, remove open parenthesis
 //. if it is less than 0, remove closed parenthesis
 
-*/
-import (
-	"strings"
-)
+"""
 
-type Stack struct {
-	items []int
-}
+class Solution:
+    
+	def remove_invalid_parenthesis(self):
+		pass
 
-func (s *Stack) Push(i int) {
-	s.items = append(s.items, i)
-}
-
-func (s *Stack) Pop() int {
-	removed := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
-	return removed
-}
-
-func (s *Stack) IsEmpty() bool {
-	return len(s.items) == 0
-}
-
-// Time complexity: O(N)
-// Space complexity: O(N)
-func matchParentheses(str string) string {
-	s := Stack{} // O(N) space
-	strArray := strings.Split(str, "")
-
-	result := make([]string, len(strArray)) // O(N) space
-	copy(result, strArray)                  // O(N)
-
-	for i, currStr := range strArray { // O(N)
-		if currStr == "(" {
-			s.Push(i)
-		} else if currStr == ")" {
-			if !s.IsEmpty() {
-				s.Pop()
-			} else {
-				result = append(result[:i], result[i+1:]...)
-			}
-		}
-	}
-
-	for !s.IsEmpty() { // O(N)
-		i := s.Pop()
-		result = append(result[:i], result[i+1:]...)
-	}
-
-	return strings.Join(result, "")
-}
+if __name__ == '__main__':
+	s = Solution()
+	print(s.remove_invalid_parenthesis())

@@ -35,4 +35,4 @@ if __name__ == '__main__':
 	node.right.right = TreeNode(7)
 	s = Solution()
 	print(s.dfs(node, []))
-	# s.dfs_iterative(node)
+	s.dfs_iterative(node)

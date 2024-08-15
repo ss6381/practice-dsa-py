@@ -1,68 +1,49 @@
-package binarysearch
+class TestCase:
+	def __init__(self, arr, target, expected):
+		self.arr = arr
+		self.target = target
+		self.expected = expected
 
-import (
-	"fmt"
-	"sort"
-)
+class Solution:
+    
+	def binary_search(self, arr, target):
+		if not arr:
+			return -1
+		left, right = 0, len(arr) - 1
+		while left <= right:
+			mid = (left + right) // 2
+			if arr[mid] == target:
+				return mid
+			if arr[mid] > target:
+				right = mid - 1
+			else:
+				left = mid + 1
+		return -1
 
-func BinarySearch(arr []int, target int) int {
-	left, right := 0, len(arr)-1
+if __name__ == '__main__':
+	s = Solution()
 
-	for left <= right {
-		mid := (left + right) / 2
-		if arr[mid] == target {
-			return mid
-		}
+	test_cases = [
+		TestCase(
+			arr=[1, 5, 7, 12, 24, 26, 46, 75, 103, 125, 235],
+			target=235,
+			expected=10
+		),
+		TestCase(
+			arr=[1, 5, 7, 12, 24, 26, 46, 75, 103, 125, 235],
+			target=7,
+			expected=2
+		),
+		TestCase(
+			arr=[1, 5, 7, 12, 24, 26, 46, 75, 103, 125, 235],
+			target=9,
+			expected=-1
+		)
+	]
 
-		if arr[mid] < target {
-			left = mid + 1
-		} else {
-			right = mid - 1
-		}
-	}
-	return -1 // Error
-}
-
-func BinarySearchRecursive(arr []int, target, low, high int) int {
-	if low > high {
-		return -1 // Error
-	}
-
-	mid := (low + high) / 2
-	if arr[mid] < target {
-		return BinarySearchRecursive(arr, target, mid+1, high)
-	} else if arr[mid] > target {
-		return BinarySearchRecursive(arr, target, low, mid-1)
-	}
-	return mid
-}
-
-func BinarySearchSort(arr []int, target int) int {
-	index := sort.Search(len(arr), func(i int) bool {
-		return arr[i] >= target
-	})
-	if index < len(arr) && arr[index] == target {
-		fmt.Printf("found %d at index %d in %v\n", target, index, arr)
-		return index
-	}
-	fmt.Printf("%d not found in %v\n", target, arr)
-	return -1
-}
-
-func BinarySearchString(s string, target byte) int {
-	left, right := 0, len(s)-1
-
-	for left <= right {
-		mid := (left + right) / 2
-		if s[mid] == target {
-			return mid
-		}
-
-		if s[mid] < target {
-			left = mid + 1
-		} else if s[mid] > target {
-			right = mid - 1
-		}
-	}
-	return -1
-}
+	for i, test in enumerate(test_cases):
+		actual = s.binary_search(test.arr, test.target)
+		if actual == test.expected:
+			print(f"Test {i+1} succeeded!")
+		else:
+			print(f"Failed, expected {test.expected} but got {actual}")

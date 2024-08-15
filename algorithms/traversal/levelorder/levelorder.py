@@ -1,59 +1,42 @@
-package levelorder
+class TreeNode:
+	def __init__(self, x):
+		self.val = x
+		self.left = None
+		self.right = None
 
-import (
-	"fmt"
-	"math"
-)
+class Solution:
 
-type (
-	node struct {
-		data  int
-		left  *node
-		right *node
-	}
-)
+	def levelorder(self, node):
+		h = self.height(node)
+		for level in range(h):
+			self.currlevel(node, level+1)
+			print()
 
-func (n *node) insert(val int) {
-	if val < n.data {
-		if n.left == nil {
-			n.left = &node{data: val}
-		}
-		n.left.insert(val)
-	} else if val > n.data {
-		if n.right == nil {
-			n.right = &node{data: val}
-		}
-		n.right.insert(val)
-	}
-}
+	def height(self, node):
+		if not node:
+			return 0
+		left = self.height(node.left)
+		right = self.height(node.right)
+		return max(left, right) + 1
+	
+	def currlevel(self, node, level):
+		if level == 1:
+			print(node.val)
+		elif level > 1:
+			if node.left:
+				self.currlevel(node.left, level - 1)
+			if node.right:
+				self.currlevel(node.right, level - 1)
 
-func (n *node) LevelOrderTraversal() {
-	h := height(n)
-	for i := 1; i <= int(h); i++ {
-		n.printCurrentLevel(i)
-		fmt.Println()
-	}
-}
 
-func (n *node) printCurrentLevel(level int) {
-	if level == 1 {
-		fmt.Printf("%d ", n.data)
-	} else if level > 1 {
-		if n.left != nil {
-			n.left.printCurrentLevel(level - 1)
-		}
-		if n.right != nil {
-			n.right.printCurrentLevel(level - 1)
-		}
-	}
-}
+if __name__ == '__main__':
+	s = Solution()
+	node = TreeNode(1)
+	node.left = TreeNode(2)
+	node.left.left = TreeNode(4)
+	node.left.right = TreeNode(5)
+	node.right = TreeNode(3)
+	node.right.left = TreeNode(6)
+	node.right.right = TreeNode(7)
 
-func height(n *node) float64 {
-	if n == nil {
-		return 0
-	}
-	lHeight := height(n.left)
-	rHeight := height(n.right)
-
-	return math.Max(lHeight, rHeight) + 1
-}
+	print(s.levelorder(node))

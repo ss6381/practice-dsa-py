@@ -1,35 +1,31 @@
-package traversal
+class TreeNode:
+	def __init__(self, x):
+		self.val = x
+		self.left = None
+		self.right = None
 
-import "fmt"
+class Solution:
+	def postorder_recursive(self, node):
+		if node:
+			self.postorder_recursive(node.left)
+			self.postorder_recursive(node.right)
+			print(node.val)
 
-type node struct {
-	data  int
-	left  *node
-	right *node
-}
+if __name__ == '__main__':
+	s = Solution()
 
-func (n *node) insert(val int) {
-	if val < n.data {
-		if n.left == nil {
-			n.left = &node{data: val}
-		}
-		n.left.insert(val)
-	} else if val > n.data {
-		if n.right == nil {
-			n.right = &node{data: val}
-		}
-		n.right.insert(val)
-	}
-}
+    #        1
+    #      /   \
+    #     2     3
+    #    / \   / \
+    #   4   5 6   7
 
-func PostOrderTraversal(node *node) {
-	// iterative
-}
+	node = TreeNode(1)
+	node.left = TreeNode(2)
+	node.left.left = TreeNode(4)
+	node.left.right = TreeNode(5)
+	node.right = TreeNode(3)
+	node.right.left = TreeNode(6)
+	node.right.right = TreeNode(7)
 
-func PostOrderTraversalRecursive(node *node) {
-	if node != nil {
-		PostOrderTraversalRecursive(node.left)
-		PostOrderTraversalRecursive(node.right)
-		fmt.Println(node.data)
-	}
-}
+	print(s.postorder_recursive(node))

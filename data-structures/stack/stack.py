@@ -1,25 +1,36 @@
-package stack
+class Stack:
+    
+	def __init__(self):
+		self.items = []
+		self.size = 0
 
-type Stack struct {
-	items []int
-	size  int
-}
+	def push(self, val):
+		self.items.append(val)
+		self.size += 1
 
-func (s *Stack) Push(item int) {
-	s.items = append(s.items, item)
-	s.size++
-}
+	def pop(self):
+		if self.items:
+			item = self.items.pop()
+			self.size -= 1
+			return item
+		raise Exception('Error: Cannot pop from an empty stack.')
+	
+	def size(self):
+		return self.size
+	
+	def empty(self):
+		return self.size == 0
+	
+if __name__ == '__main__':
+	stack = Stack()
 
-func (s *Stack) Pop() int {
-	if s.IsEmpty() {
-		return -1
-	}
-	item := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
-	s.size--
-	return item
-}
-
-func (s *Stack) IsEmpty() bool {
-	return s.size == 0
-}
+	stack.push(1)
+	stack.push(3)
+	print(stack.pop())
+	stack.push(4)
+	print(stack.pop())
+	print(stack.pop())
+	try:
+		print(stack.pop())
+	except Exception:
+		print('exception.')

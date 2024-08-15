@@ -1,115 +1,51 @@
-package bfs
+import collections
 
-const (
-	Unvisited State = iota
-	Visited
-	Visiting
-)
+class TreeNode:
+	def __init__(self, x):
+		self.val = x
+		self.left = None
+		self.right = None
 
-type (
-	Graph struct {
-		nodes []*node
-	}
+class Solution:
 
-	State int
-	node  struct {
-		key      int
-		adjacent []*node
-		state    State
-	}
+	def bfs_recursive(self, queue):
+		if not queue:
+			return
+		curr = queue.popleft()
+		print(curr.val)
+		if curr.left:
+			queue.append(curr.left)
+		if curr.right:
+			queue.append(curr.right)
+		self.bfs_recursive(queue)
 
-	Queue struct {
-		items []*node
-	}
-)
+	def bfs(self, node):
+		if not node:
+			return
+		q = collections.deque()
+		q.append(node)
+		self.bfs_recursive(q)
+		
+	def bfs_iterative(self, node):
+		q = collections.deque()
+		q.append(node)
+		while q:
+			curr = q.popleft()
+			print(curr.val)
+			if curr.left:
+				q.append(curr.left)
+			if curr.right:
+				q.append(curr.right)
+		return -1
 
-func (g *Graph) AddVertex(k int) {
-	// TODO: check if node with key k already exists in graph
-	g.nodes = append(g.nodes, &node{key: k})
-}
-
-func (g *Graph) AddEdge(from, to int) {
-	fromNode := getNode(g.nodes, from)
-	toNode := getNode(g.nodes, to)
-
-	// TODO: check if either nodes returned nil
-	// TODO: check if edge already exists
-
-	fromNode.adjacent = append(fromNode.adjacent, toNode)
-}
-
-func getNode(nodes []*node, k int) *node {
-	for _, n := range nodes {
-		if n.key == k {
-			return n
-		}
-	}
-	return nil
-}
-
-func (q *Queue) Enqueue(n *node) {
-	q.items = append(q.items, n)
-}
-
-func (q *Queue) Dequeue() *node {
-	if q.IsEmpty() {
-		return nil
-	}
-	removed := q.items[0]
-	q.items = q.items[1:]
-	return removed
-}
-
-func (q *Queue) IsEmpty() bool {
-	return len(q.items) == 0
-}
-
-func (g *Graph) BreadthFirstSearch(start, end *node) bool {
-	if start == end {
-		return true
-	}
-
-	q := Queue{}
-
-	start.state = Visiting
-	q.Enqueue(start)
-	for !q.IsEmpty() {
-		n := q.Dequeue()
-		if n != nil {
-			for _, v := range n.adjacent {
-				if v.state == Unvisited {
-					if v == end {
-						return true
-					} else {
-						v.state = Visiting
-						q.Enqueue(v)
-					}
-				}
-			}
-			n.state = Visited
-		}
-	}
-	return false
-}
-
-// type bstNode struct {
-// 	data  int
-// 	left  *bstNode
-// 	right *bstNode
-// }
-
-// func (n *bstNode) BreadthFirstSearch() []int {
-// 	queue := []*bstNode{n}
-
-// 	for len(queue) > 0 {
-// 		current := queue[0]
-// 		queue := queue[1:]
-// 		if n.left != nil {
-// 			queue = append(queue, n.left)
-// 		}
-// 		if n.right != nil {
-// 			queue = append(queue, n.right)
-// 		}
-// 	}
-// 	return array
-// }
+if __name__ == '__main__':
+	node = TreeNode(1)
+	node.left = TreeNode(2)
+	node.left.left = TreeNode(4)
+	node.left.right = TreeNode(5)
+	node.right = TreeNode(3)
+	node.right.left = TreeNode(6)
+	node.right.right = TreeNode(7)
+	s = Solution()
+	s.bfs(node)
+	s.bfs_iterative(node)

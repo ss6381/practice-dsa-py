@@ -1,24 +1,25 @@
-package levelorder
+from levelorder import level_order, TreeNode
+import pytest
 
-import (
-	"testing"
+#        1
+#      /   \
+#     2     3
+#    / \   / \
+#   4   5 6   7
+
+
+@pytest.mark.parametrize(
+    "root, expected",
+    [
+        (
+            TreeNode(
+                val=1,
+                left=TreeNode(val=2, left=TreeNode(val=4), right=TreeNode(val=5)),
+                right=TreeNode(val=3, left=TreeNode(val=6), right=TreeNode(val=7)),
+            ),
+            [[1], [2, 3], [4, 5, 6, 7]],
+        )
+    ],
 )
-
-func TestLevelOrderTraversal(t *testing.T) {
-	tests := []struct {
-		name  string
-		input []int
-	}{
-		{
-			name:  "happy path",
-			input: []int{150, 50, 200, 70, 55, 25},
-		},
-	}
-	for _, tt := range tests {
-		n := node{data: 100}
-		for _, val := range tt.input {
-			n.insert(val)
-		}
-		n.LevelOrderTraversal()
-	}
-}
+def test_levelorder(root, expected):
+    assert level_order(root) == expected

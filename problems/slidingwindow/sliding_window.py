@@ -1,24 +1,26 @@
-package slidingwindow
+# # find all contiguous permutations of b in s
+# def SlidingWindow(b: str, s: str) -> list[list[int]]:
+#     permutations = []
+#     bMap = createComparisonMap(b)  # O(b)
+#     for i in range(len(s)):  # O(s * b)
+#         if s[i] in bMap:
+#             for k in range(len(b)):
+#                 if s[i + k] == b[k]:
+#                     permutations.append([i, i + k])
+#     return permutations
 
-// find all contiguous permutations of b in s
-// func SlidingWindow(b string, s string) [][]int {
-// 	permutations := make([][]int, 0)
-// 	bMap := createComparisonMap(b) // O(b)
-// 	for i := 0; i < len(s); i++ {  // O(s * b)
-// 		if _, ok := bMap[s[i]]; ok {
-// 			for k := range b {
+from typing import List, Tuple
+from collections import Counter
 
-// 				// permutations = append(permutations, []int{i, k})
-// 			}
-// 		}
-// 	}
-// 	return permutations
-// }
 
-// func createComparisonMap(b string) map[byte]int {
-// 	bMap := make(map[byte]int)
-// 	for j, characterB := range b {
-// 		bMap[characterB] = j
-// 	}
-// 	return bMap
-// }
+def sliding_window(cipher: str, input: str) -> List[Tuple[int, int]]:
+    cipher_count = Counter(cipher)
+    result = []
+    for i in range(len(input)):
+        if input[i] in cipher_count.keys():
+            if i + len(cipher) - 1 >= len(input):
+                return result
+            window = str(input[i : i + len(cipher)])
+            if Counter(window) == cipher_count:
+                result.append((i, i + len(cipher) - 1))
+    return result

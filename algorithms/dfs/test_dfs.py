@@ -1,20 +1,26 @@
-package dfs
+from dfs import dfs, dfs_iterative, TreeNode
+import pytest
 
-import (
-	"fmt"
-	"testing"
+#        1
+#      /   \
+#     2     3
+#    / \   / \
+#   4   5 6   7
+
+
+@pytest.mark.parametrize(
+    "root, expected",
+    [
+        (
+            TreeNode(
+                val=1,
+                left=TreeNode(val=2, left=TreeNode(val=4), right=TreeNode(val=5)),
+                right=TreeNode(val=3, left=TreeNode(val=6), right=TreeNode(val=7)),
+            ),
+            [1, 2, 4, 5, 3, 6, 7],
+        )
+    ],
 )
-
-func TestDFS(t *testing.T) {
-	node := Node{Value: 100}
-	node.Insert(150)
-	node.Insert(50)
-	node.Insert(25)
-	node.Insert(75)
-	node.Insert(30)
-	node.Insert(80)
-	fmt.Println(node)
-
-	array := []int{}
-	fmt.Println(node.DepthFirstSearch(array))
-}
+def test_dfs(root, expected):
+    assert dfs(root, []) == expected
+    assert dfs_iterative(root) == expected

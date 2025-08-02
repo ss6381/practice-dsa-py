@@ -1,28 +1,15 @@
-package kthlargestnumber
+from kth_largest_number import kth_largest
+import pytest
+from typing import List
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.mark.parametrize(
+    "array, k, expected",
+    [
+        ([1, 6, 2, 5, 3, 7, 4], 3, 5),
+        ([3, 2, 1, 5, 6, 4], 2, 5),
+        ([3, 2, 3, 1, 2, 4, 5, 5, 6], 4, 4),
+    ],
 )
-
-func TestKthLargest(t *testing.T) {
-	tests := []struct {
-		name       string
-		inputArray []int
-		inputK     int
-		expected   int
-	}{
-		{
-			name:       "valid",
-			inputArray: []int{1, 6, 2, 5, 3, 7, 4},
-			inputK:     3,
-			expected:   5,
-		},
-	}
-
-	for _, tt := range tests {
-		assert.Equal(t, tt.expected, KthLargestSimple(tt.inputArray, tt.inputK))
-		// assert.Equal(t, tt.expected, KthLargest(tt.inputArray, tt.inputK))
-	}
-}
+def test_kth_largest(array: List[int], k: int, expected: int):
+    assert kth_largest(array, k) == expected

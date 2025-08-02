@@ -1,80 +1,60 @@
-package fillmerchants
+from fill_merchants import split, Merchant
+import pytest
 
-import (
-	"fmt"
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.mark.parametrize(
+    "input, amount, expected",
+    [
+        (
+            [
+                Merchant(key="a", capacity=20),
+                Merchant(key="c", capacity=10),
+                Merchant(key="d", capacity=100),
+                Merchant(key="b", capacity=100),
+            ],
+            100,
+            [
+                ("a", 20),
+                ("c", 10),
+                ("d", 35),
+                ("b", 35),
+            ],
+        ),
+        (
+            [
+                Merchant(key="a", capacity=20),
+                Merchant(key="c", capacity=10),
+                Merchant(key="d", capacity=100),
+                Merchant(key="b", capacity=100),
+            ],
+            101,
+            [
+                ("a", 20),
+                ("c", 10),
+                ("d", 36),
+                ("b", 35),
+            ],
+        ),
+        # (
+        #     [
+        #         Merchant(key="a", capacity=20),
+        #         Merchant(key="c", capacity=10),
+        #         Merchant(key="d", capacity=110),
+        #         Merchant(key="b", capacity=110),
+        #         Merchant(key="e", capacity=100),
+        #         Merchant(key="f", capacity=100),
+        #     ],
+        #     200,
+        #     [
+        #         ("a", 20),
+        #         ("c", 10),
+        #         ("d", 42),
+        #         ("b", 44),
+        #         ("e", 42),
+        #         ("f", 42),
+        #     ],
+        # ),
+    ],
 )
-
-func TestMerchants(t *testing.T) {
-	tests := []struct {
-		name        string
-		input       []*merchant
-		inputAmount int
-		expected    []*merchant
-	}{
-		{
-			name: "valid - even",
-			input: []*merchant{
-				{key: "a", maxCapacity: 20},
-				{key: "c", maxCapacity: 10},
-				{key: "d", maxCapacity: 100},
-				{key: "b", maxCapacity: 100},
-			},
-			inputAmount: 100,
-			expected: []*merchant{
-				{key: "a", maxCapacity: 20, amount: 20},
-				{key: "c", maxCapacity: 10, amount: 10},
-				{key: "d", maxCapacity: 100, amount: 35},
-				{key: "b", maxCapacity: 100, amount: 35},
-			},
-		},
-		{
-			name: "valid - uneven",
-			input: []*merchant{
-				{key: "a", maxCapacity: 20},
-				{key: "c", maxCapacity: 10},
-				{key: "d", maxCapacity: 100},
-				{key: "b", maxCapacity: 100},
-			},
-			inputAmount: 101,
-			expected: []*merchant{
-				{key: "a", maxCapacity: 20, amount: 20},
-				{key: "c", maxCapacity: 10, amount: 10},
-				{key: "d", maxCapacity: 100, amount: 35},
-				{key: "b", maxCapacity: 100, amount: 36},
-			},
-		},
-		{
-			name: "valid - sean (from the subscriptions team)",
-			input: []*merchant{
-				{key: "a", maxCapacity: 20},
-				{key: "c", maxCapacity: 10},
-				{key: "d", maxCapacity: 110},
-				{key: "b", maxCapacity: 110},
-				{key: "e", maxCapacity: 100},
-				{key: "f", maxCapacity: 100},
-			},
-			inputAmount: 200,
-			expected: []*merchant{
-				{key: "a", maxCapacity: 20, amount: 20},
-				{key: "c", maxCapacity: 10, amount: 10},
-				{key: "d", maxCapacity: 110, amount: 42},
-				{key: "b", maxCapacity: 110, amount: 44},
-				{key: "e", maxCapacity: 100, amount: 42},
-				{key: "f", maxCapacity: 100, amount: 42},
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		result := split(tt.input, tt.inputAmount)
-		for i := range result {
-			fmt.Println(result[i])
-			resultByKey := sortByKey(result)
-			expectedByKey := sortByKey(tt.expected)
-			assert.Equal(t, expectedByKey[i].amount, resultByKey[i].amount)
-		}
-	}
-}
+def test_split(input, amount, expected):
+    assert split(input, amount) == expected

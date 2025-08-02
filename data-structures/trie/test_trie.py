@@ -1,27 +1,20 @@
-package trie
+from trie import Trie, TrieNode
+import pytest
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.fixture
+def trie():
+    return Trie(TrieNode())
+
+
+@pytest.mark.parametrize(
+    "vocabulary, search",
+    [
+        (["cat", "cog", "dog", "dash", "do", "cater"], ("wizard", False)),
+        (["cat", "cog", "dog", "dash", "do", "cater"], ("dash", True)),
+    ],
 )
-
-func TestTrie(t *testing.T) {
-	input := []string{
-		"cat",
-		"cog",
-		"dog",
-		"dash",
-		"do",
-		"cater",
-	}
-
-	trie := &Trie{root: &Node{}}
-	for _, inp := range input {
-		trie.Insert(inp)
-	}
-	// fmt.Println(trie.root)
-
-	assert.False(t, trie.Search("wizard"))
-	assert.True(t, trie.Search("dash"))
-}
+def test_trie(trie: Trie, vocabulary, search):
+    for word in vocabulary:
+        trie.insert(word)
+    assert trie.search(search[0]) == search[1]

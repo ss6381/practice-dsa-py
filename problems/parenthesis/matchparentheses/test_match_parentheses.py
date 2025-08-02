@@ -1,40 +1,10 @@
-package matchparentheses
+from match_parentheses import remove_invalid_parenthesis
+import pytest
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.mark.parametrize(
+    "s, expected",
+    [("()", "()"), ("((a)", "(a)"), ("(a))()", "(a)()"), ("(a)(()", "(a)()")],
 )
-
-func TestMatchParentheses(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{
-			name:     "happy",
-			input:    "()",
-			expected: "()",
-		},
-		{
-			name:     "happy - open",
-			input:    "((a)",
-			expected: "(a)",
-		},
-		{
-			name:     "happy - closed",
-			input:    "(a))()",
-			expected: "(a)()",
-		},
-		{
-			name:     "happy - closed",
-			input:    "(a)(()",
-			expected: "(a)()",
-		},
-	}
-
-	for _, tt := range tests {
-		assert.Equal(t, tt.expected, matchParentheses(tt.input))
-	}
-}
+def test_remove_invalid_parenthesis(s: str, expected: str):
+    assert remove_invalid_parenthesis(s) == expected

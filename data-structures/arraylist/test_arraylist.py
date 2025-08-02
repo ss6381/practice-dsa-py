@@ -1,55 +1,58 @@
-package arraylist
+from arraylist import ArrayList
+import pytest
 
-import (
-	"fmt"
-	"testing"
 
-	"github.com/stretchr/testify/assert"
-)
+@pytest.fixture
+def arraylist():
+    """Creates a fresh instance of the arraylist for each test case."""
+    return ArrayList()
 
-func TestArrayList(t *testing.T) {
-	tests := []struct {
-		name          string
-		add           []int
-		removeByValue int
-		expected      bool
-	}{
-		{
-			name:          "valid - start",
-			add:           []int{2, 4, 6, 5, 12},
-			removeByValue: 2,
-			expected:      true,
-		},
-		{
-			name:          "valid - middle",
-			add:           []int{2, 4, 6, 5, 12},
-			removeByValue: 5,
-			expected:      true,
-		},
-		{
-			name:          "valid - end",
-			add:           []int{2, 4, 6, 5, 12},
-			removeByValue: 12,
-			expected:      true,
-		},
-		{
-			name:          "invalid",
-			add:           []int{2, 4, 6, 5, 12},
-			removeByValue: 3,
-			expected:      false,
-		},
-	}
 
-	for _, tt := range tests {
-		list := ArrayList{}
-		for _, item := range tt.add {
-			list.Add(item)
-		}
-		fmt.Println(list.items)
-		assert.Equal(t, list.RemoveByValue(tt.removeByValue), tt.expected)
-		fmt.Println(list.items)
+@pytest.mark.parametrize("items, expected", [([6, 2, 3, 7, 8], [6, 2, 3, 7, 8])])
+def test_append(arraylist: ArrayList, items, expected):
+    for item in items:
+        arraylist.append(item)
+    assert arraylist.items == expected
 
-		fmt.Println(list.RemoveByIndex(0))
-		fmt.Println(list.items)
-	}
-}
+
+@pytest.mark.parametrize("items, expected", [([6, 2, 3, 7, 8], [2, 3, 6, 7, 8])])
+def test_insert_sorted(arraylist: ArrayList, items, expected):
+    for item in items:
+        arraylist.insert_sorted(item)
+    assert arraylist.items == expected
+
+
+@pytest.mark.parametrize("items, expected", [([1, 2], 1)])
+def test_pop(arraylist: ArrayList, items, expected):
+    for item in items:
+        arraylist.append(item)
+    assert arraylist.pop(0) == expected, "item was not removed properly."
+
+
+def test_pop_throws_indexerror(arraylist: ArrayList):
+    with pytest.raises(IndexError, match="Cannot remove from empty list."):
+        arraylist.pop()
+
+
+@pytest.mark.parametrize("items, index", [([1, 2, 3], 3), ([4, 5], 2)])
+def test_pop_throws_valueerror(arraylist: ArrayList, items, index):
+    for item in items:
+        arraylist.append(item)
+    with pytest.raises(ValueError, match="Input index provided is out of bounds."):
+        arraylist.pop(index)
+
+
+@pytest.mark.parametrize("items, expected", [([6, 2, 3, 7, 8], [2, 3, 6, 7, 8])])
+def test_sort(arraylist: ArrayList, items, expected):
+    for item in items:
+        arraylist.append(item)
+    arraylist.sort()
+    assert arraylist.items == expected
+
+
+@pytest.mark.parametrize("items, target, expected", [([2, 3, 6, 7, 8], 7, 3)])
+def test_search(arraylist: ArrayList, items, target, expected):
+    for item in items:
+        arraylist.append(item)
+    arraylist.sort()
+    assert arraylist.search(target) == expected

@@ -1,6 +1,6 @@
 """
 Snap - 1st Round
-Given a string that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.
+Given a string that contains parentheses and letters, remove the minimum number of invalid parentheses to make the input string valid.
 
 input: "()"
 output: "()"
@@ -39,11 +39,15 @@ output: "(a)()"
 
 """
 
-class Solution:
-    
-	def remove_invalid_parenthesis(self):
-		pass
 
-if __name__ == '__main__':
-	s = Solution()
-	print(s.remove_invalid_parenthesis())
+def remove_invalid_parenthesis(s: str) -> str:
+    stack = []
+    for c in s:
+        if c == "(":
+            stack.append(")")
+        elif c == ")":
+            if len(stack) > 0:
+                stack.pop()
+            else:
+                return ""
+    return "".join(stack)

@@ -1,54 +1,97 @@
-package linkedlist
+from linkedlist import DoublyLinkedList
+import pytest
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.fixture
+def linkedlist():
+    return DoublyLinkedList()
+
+
+@pytest.mark.parametrize(
+    "insert, expected",
+    [
+        ([1], [1]),
+        ([2, 3], [2, 3]),
+    ],
 )
+def test_linkedlist_append_success(linkedlist: DoublyLinkedList, insert, expected):
+    # use arrange-act-assert to write unit tests using best practices.
+    for data in insert:
+        linkedlist.append(data=data)
+    assert linkedlist.to_list() == expected
 
-func TestLinkedList(t *testing.T) {
-	tests := []struct {
-		name         string
-		prepend      []int
-		append       []int
-		remove       []int
-		expectedArr  []int
-		expectedSize int
-	}{
-		{
-			name:         "happy path - prepend",
-			prepend:      []int{1, 2, 3, 4},
-			expectedArr:  []int{4, 3, 2, 1},
-			expectedSize: 4,
-		},
-		{
-			name:         "happy path - append",
-			append:       []int{1, 2, 2, 4, 3},
-			expectedArr:  []int{1, 2, 2, 4, 3},
-			expectedSize: 5,
-		},
-		{
-			name:         "happy path - mixed",
-			prepend:      []int{5, 6, 2},
-			append:       []int{1, 2, 3, 4},
-			remove:       []int{2, 5},
-			expectedArr:  []int{6, 1, 2, 3, 4},
-			expectedSize: 5,
-		},
-	}
 
-	for _, tt := range tests {
-		list := Init()
-		for _, p := range tt.prepend {
-			list.Prepend(p)
-		}
-		for _, a := range tt.append {
-			list.Append(a)
-		}
-		for _, r := range tt.remove {
-			list.Remove(r)
-		}
-		assert.Equal(t, tt.expectedSize, list.size)
-		assert.Equal(t, tt.expectedArr, list.ToArray())
-	}
-}
+@pytest.mark.parametrize(
+    "insert, expected",
+    [
+        ([(1, 0)], [1]),
+        ([(2, 0), (3, 0)], [3, 2]),
+        ([(2, 0), (3, 1)], [2, 3]),
+        ([(2, 0), (4, 0), (3, -1)], [4, 2, 3]),
+    ],
+)
+def test_linkedlist_insert_success(linkedlist: DoublyLinkedList, insert, expected):
+    # use arrange-act-assert to write unit tests using best practices.
+    for data, index in insert:
+        linkedlist.insert(data=data, index=index)
+    assert linkedlist.to_list() == expected
+
+
+@pytest.mark.parametrize(
+    "insert, error_msg",
+    [
+        ([(1, 1)], "Index value provided was out-of-bounds."),
+        ([(2, 0), (3, -2)], "Index value provided was out-of-bounds."),
+        ([(2, 0), (3, 2)], "Index value provided was out-of-bounds."),
+    ],
+)
+def test_linkedlist_insert_error(linkedlist: DoublyLinkedList, insert, error_msg):
+    with pytest.raises(
+        ValueError,
+        match=error_msg,
+    ):
+        for data, index in insert:
+            linkedlist.insert(data=data, index=index)
+
+
+@pytest.mark.parametrize("insert, remove, expected", [([1, 2, 3], [2], [1, 3])])
+def test_linkedlist_remove_success(
+    linkedlist: DoublyLinkedList, insert, remove, expected
+):
+    for data in insert:
+        linkedlist.append(data)
+    for data in remove:
+        linkedlist.remove(data)
+    assert linkedlist.to_list() == expected
+
+
+@pytest.mark.parametrize(
+    "insert, pop, expected",
+    [
+        ([1, 2, 3], [1], [1, 3]),
+        ([1, 2, 3], [-1], [1, 2]),
+        ([1], [0], []),
+    ],
+)
+def test_linkedlist_pop_success(linkedlist: DoublyLinkedList, insert, pop, expected):
+    for data in insert:
+        linkedlist.append(data)
+    for index in pop:
+        linkedlist.pop(index)
+    assert linkedlist.to_list() == expected
+
+
+@pytest.mark.parametrize(
+    "insert, pop, error_msg",
+    [
+        ([], [0], "Cannot remove from an empty linked list."),
+        ([1, 2, 3], [-2], "Index value provided was out-of-bounds."),
+        ([1, 2, 3], [3], "Index value provided was out-of-bounds."),
+    ],
+)
+def test_linkedlist_pop_error(linkedlist: DoublyLinkedList, insert, pop, error_msg):
+    with pytest.raises(ValueError, match=error_msg):
+        for data in insert:
+            linkedlist.append(data)
+        for index in pop:
+            linkedlist.pop(index)

@@ -1,58 +1,137 @@
-package graph
+from collections import deque
+from dataclasses import dataclass
+from typing import Optional, List, Set
 
-import "fmt"
 
-type (
-	Graph struct {
-		vertices []*node
-	}
+@dataclass
+class Node:
+    key: int
+    adjacent: List[Optional["Node"]]
 
-	node struct {
-		key      int
-		adjacent []*node
-	}
-)
+    def __str__(self):
+        result = []
+        for edge in self.adjacent:
+            result.append(str(edge.key))
+        return " ".join(result)
 
-func (g *Graph) AddVertex(k int) {
-	if getNode(g.vertices, k) != nil {
-		fmt.Printf("Vertex %v already exists.\n", k)
-		return
-	}
-	n := &node{key: k}
-	g.vertices = append(g.vertices, n)
-}
+    def __eq__(self, node: Optional["Node"]) -> bool:
+        return self.key == node.key
 
-func (g *Graph) AddEdge(from, to int) {
-	fromVertex := getNode(g.vertices, from)
-	toVertex := getNode(g.vertices, to)
+    def adjacent_to(self, to_node):
+        if to_node in self.adjacent:
+            raise ValueError(
+                f"Edge from vertex {self.key} to vertex {to_node.key} already exists."
+            )
+        self.adjacent.append(to_node)
 
-	if fromVertex == nil || toVertex == nil {
-		fmt.Printf("Vertex does not exist: invalid edge %v --> %v\n", from, to)
-	} else if getNode(fromVertex.adjacent, to) != nil {
-		fmt.Printf("Edge %v --> %v already exists.\n", from, to)
-	} else {
-		// add edge
-		// directed graph implementation, so we only add toVertex to fromVertex's adjacency list
-		// rather than creating a bidirectional connection
-		fromVertex.adjacent = append(fromVertex.adjacent, toVertex)
-	}
-}
 
-func getNode(arr []*node, k int) *node {
-	for _, vertex := range arr {
-		if vertex.key == k {
-			return vertex
-		}
-	}
-	return nil
-}
+class DirectedGraph:
+    """
+    Python has does not have an easy built-in graph implementation.
+    Here is a simple implementation of a graph using an adjacency list.
+    We only add to_vertex to from_vertex's adjacency list rather than
+    creating a bidirectional connection.
+    """
 
-func (g *Graph) Print() {
-	for _, vertex := range g.vertices {
-		fmt.Printf("Vertex %d:", vertex.key)
-		for _, edge := range vertex.adjacent {
-			fmt.Printf(" %v", edge.key)
-		}
-		fmt.Println()
-	}
-}
+    def __init__(self, vertices: Optional[List[Node]] = None):
+        if vertices is None:
+            vertices = []
+        for v in vertices:
+            if len(v.adjacent) > 0:
+                raise ValueError(
+                    "Cannot initialize graph with existing edges. Use add_edge method."
+                )
+        self.vertices = vertices
+
+    def __str__(self):
+        result = []
+        for vertex in self.vertices:
+            result.append("Vertex " + str(vertex.key) + ": " + str(vertex))
+        return "\n".join(result)
+
+    def add_vertex(self, k: int):
+        vertex = self.get_node(k)
+        if vertex is not None:
+            raise ValueError(f"Vertex {k} already exists")
+        self.vertices.append(Node(key=k, adjacent=[]))
+
+    def add_edge(self, from_key: int, to_key: int):
+        from_node = self.get_node(from_key)
+        if from_node is None:
+            raise ValueError(f"Vertex {from_key} does not exist.")
+
+        to_node = self.get_node(to_key)
+        if to_node is None:
+            raise ValueError(f"Vertex {to_key} does not exist.")
+
+        from_node.adjacent_to(to_node)
+
+    def get_node(self, k: int) -> Optional[Node]:
+        for node in self.vertices:
+            if node.key == k:
+                return node
+        return None
+
+    def topological_sort(self):
+        """
+        Topological sort is a linear ordering of the vertices of a directed
+        acyclic graph (DAG) such that for every directed edge uv from vertex u to vertex v,
+        u comes before v in the ordering.
+        """
+        visited = set()
+        sorted_vertices = []
+        for vertex in self.vertices:
+            if vertex.key not in visited:
+                self.__topological_sort(vertex, visited, sorted_vertices)
+        return sorted_vertices
+
+    def __topological_sort(self, vertex: Node, visited: Set[int], result: List[int]):
+        visited.add(vertex.key)
+        for adjacent in vertex.adjacent:
+            if adjacent.key not in visited:
+                self.__topological_sort(adjacent, visited, result)
+        result.insert(0, vertex.key)
+
+    def breadth_first_search(self, root: Node):
+        result = []
+        visited: Set[int] = set()
+        q = deque([root])
+        while q:
+            curr: Node = q.popleft()
+            if curr.key not in visited:
+                result.append(curr.key)
+                visited.add(curr.key)
+                for adjacent in curr.adjacent:
+                    q.append(adjacent)
+        return result
+
+    def depth_first_search_iterative(self, root: Node):
+        result = []
+        visited: Set[int] = set()
+        stack = [root]
+        while stack:
+            curr: Node = stack.pop()
+            if curr.key not in visited:
+                result.append(curr.key)
+                visited.add(curr.key)
+                for adjacent in curr.adjacent:
+                    stack.append(adjacent)
+        return result
+
+    def depth_first_search(
+        self, node: Optional[Node], visited: Set[int] = set(), result: List[int] = []
+    ):
+        if not node:
+            return result
+        result.append(node.key)
+        visited.add(node.key)
+        for adjacent in node.adjacent:
+            if adjacent.key not in visited:
+                self.depth_first_search(adjacent, visited, result)
+        return result
+
+
+# g = DirectedGraph([Node(key=1, adjacent=[])])
+# g.add_vertex(3)
+# g.add_edge(3, 1)
+# print(g)

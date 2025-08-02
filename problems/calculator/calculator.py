@@ -1,37 +1,45 @@
-package calculator
+from typing import Set, List
 
-import (
-	"fmt"
-	"strings"
-)
 
-type Stack struct {
-	items []string
-}
+def calculate(input: str) -> int:
+    """
+    convert input into postfix notation: A + B * C --> A B C * +
+    by storing operands in one stack and operators in another stack
+    and pop values from both in sequence.
+    """
+    check_operators: Set[str] = set(["+", "-"])
+    for op in check_operators:
+        input = input.replace(f"{op}", f" {op} ")
+    check_parenthesis: Set[str] = set(["(", ")"])
+    for op in check_parenthesis:
+        input = input.replace(f"{op}", f" {op} ")
+    input_split = input.split()  # splits by whitespace
+    print(input_split)
 
-func (s *Stack) Push(str string) {
-	s.items = append(s.items, str)
-}
+    operands: List[int] = []
+    operators: List[str] = []
+    for character in input_split:
+        if character in check_parenthesis:
+            continue
+        if character in check_operators:
+            operators.append(character)
+        else:
+            if not character.isnumeric():
+                raise ValueError(
+                    f"Unknown or invalid character found in input: ", character
+                )
+            operands.append(int(character))
+    operands_str = " ".join([str(x) for x in operands])
+    operators_str = " ".join(operators)
+    print(f"{operands_str} {operators_str}")
 
-func (s *Stack) Pop() string {
-	removed := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
-	return removed
-}
-
-func Calculator(input string) int {
-	strArr := strings.Split(input, "")
-
-	for _, str := range strArr {
-		if str != "(" && str != ")" {
-			// if str == "+" || str == ""
-			fmt.Println()
-		}
-	}
-
-	// convert strArr into postfix notation: A + B * C --> A B C * +
-	// by storing operands in one stack and operators in another stack
-	// and popping values from both in sequence
-
-	return -1
-}
+    result = operands.pop(0)
+    for op in reversed(operators):
+        curr = operands.pop()
+        if op == "+":
+            print(f"{curr} + {result} = {result + curr}")
+            result += curr
+        elif op == "-":
+            print(f"{curr} - {result} = {result - curr}")
+            result -= curr
+    return result

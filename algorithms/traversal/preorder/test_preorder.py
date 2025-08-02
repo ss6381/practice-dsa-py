@@ -1,27 +1,25 @@
-package traversal
+from preorder import preorder, TreeNode
+import pytest
 
-import "testing"
+#        1
+#      /   \
+#     2     3
+#    / \   / \
+#   4   5 6   7
 
-func TestPreorderTraversal(t *testing.T) {
 
-}
-
-func TestPreorderTraversalRecursive(t *testing.T) {
-	tests := []struct {
-		name  string
-		input []int
-	}{
-		{
-			name:  "happy path",
-			input: []int{150, 50, 200, 70, 55, 25},
-		},
-	}
-
-	for _, tt := range tests {
-		n := &node{data: 100}
-		for _, val := range tt.input {
-			n.insert(val)
-		}
-		PreOrderTraversalRecursive(n)
-	}
-}
+@pytest.mark.parametrize(
+    "root, expected",
+    [
+        (
+            TreeNode(
+                val=1,
+                left=TreeNode(val=2, left=TreeNode(val=4), right=TreeNode(val=5)),
+                right=TreeNode(val=3, left=TreeNode(val=6), right=TreeNode(val=7)),
+            ),
+            [1, 2, 4, 5, 3, 6, 7],
+        )
+    ],
+)
+def test_preorder(root, expected):
+    assert preorder(root) == expected

@@ -1,119 +1,101 @@
-package hashtable
+from dataclasses import dataclass
+from typing import Optional
 
-import "fmt"
 
-// Go's map[string]string implementation provides hashtable functionality by default
-const ArraySize = 5
+@dataclass
+class BucketNode:
+    key: str = None
+    next: Optional["BucketNode"] = None
 
-type (
-	HashTable struct {
-		arr  [ArraySize]*bucket
-		size int
-	}
 
-	bucket struct {
-		head *bucketNode
-		size int
-	}
+class Bucket:
+    def __init__(self):
+        self.head: BucketNode = BucketNode()
+        self.size = 0
 
-	bucketNode struct {
-		key  string
-		next *bucketNode
-	}
-)
+    def print(self):
+        result = []
+        curr = self.head.next
+        while curr is not None:
+            if curr.key is not None:
+                result.append(curr.key)
+            else:
+                result.append("None")
+            curr = curr.next
+        return " ".join(result)
 
-// Init
-func Init() *HashTable {
-	table := &HashTable{}
-	for i := range table.arr {
-		table.arr[i] = &bucket{
-			head: &bucketNode{},
-		}
-	}
-	return table
-}
+    def insert(self, key: str):
+        # if bucket already contains key, do not insert
+        curr = self.head.next
+        while curr is not None:
+            if curr.key is not None and curr.key == key:
+                return
+            curr = curr.next
+        next = self.head.next
+        node = BucketNode(key=key, next=next)
+        self.head.next = node
+        self.size += 1
 
-// Insert
-func (h *HashTable) Insert(key string) {
-	h.arr[hash(key)].insert(key)
-	h.size++
-}
+    def search(self, key: str) -> BucketNode:
+        curr = self.head.next
+        while curr is not None:
+            if curr.key is not None and curr.key == key:
+                return curr
+            curr = curr.next
+        return None
 
-// Search
-func (h *HashTable) Search(key string) int {
-	index := hash(key)
-	node := h.arr[index].search(key)
-	if node != nil {
-		return index
-	}
-	return -1
-}
+    def delete(self, key: str) -> bool:
+        curr = self.head
+        while curr.next is not None:
+            if curr.next.key is not None and curr.next.key == key:
+                curr.next = curr.next.next
+                self.size -= 1
+                return True
+            curr = curr.next
+        return False
 
-// Delete
-func (h *HashTable) Delete(key string) bool {
-	index := hash(key)
-	if h.arr[index].delete(key) {
-		h.size--
-		return true
-	}
-	return false
-}
 
-func (h *HashTable) Print() {
-	for i, elem := range h.arr {
-		fmt.Printf("Index %v:", i)
-		elem.Print()
-		fmt.Println()
-	}
-}
+class HashTable:
+    """
+    Python has an in-built hash table implementation called dict.
+    This is a manual implementation of a hash table.
+    """
 
-// insert
-func (b *bucket) insert(key string) {
-	// TODO: if bucket already contains key, do not insert
-	next := b.head.next
-	node := &bucketNode{key: key, next: next}
-	b.head.next = node
-	b.size++
-}
+    def __init__(self, array_size=5):
+        self.array = [Bucket() for _ in range(array_size)]
+        self.array_size = array_size
+        self.size = 0
 
-// search
-func (b *bucket) search(key string) *bucketNode {
-	curr := b.head.next
-	for curr != nil {
-		if curr.key == key {
-			return curr
-		}
-		curr = curr.next
-	}
-	return nil
-}
+    def __repr__(self):
+        result = []
+        for i, item in enumerate(self.array):
+            result.append(f"index {i}: " + item.print())
+        return "\n".join(result)
 
-// delete
-func (b *bucket) delete(key string) bool {
-	curr := b.head
-	for curr.next != nil {
-		if curr.next.key == key {
-			curr.next = curr.next.next
-			b.size--
-			return true
-		}
-	}
-	return false
-}
+    def insert(self, key: str):
+        bucket: Bucket = self.array[self.hash(key)]
+        bucket.insert(key=key)
+        self.size += 1
 
-func (b *bucket) Print() {
-	curr := b.head.next
-	for curr != nil {
-		fmt.Printf(" %v", curr.key)
-		curr = curr.next
-	}
-}
+    def search(self, key: str) -> int:
+        index = self.hash(key)
+        if self.array[index].search(key) is not None:
+            return index
+        return -1
 
-// basic hash function
-func hash(key string) int {
-	sum := 0
-	for _, char := range key {
-		sum += int(char)
-	}
-	return sum % ArraySize
-}
+    def delete(self, key: str) -> bool:
+        if self.array[self.hash(key)].delete(key):
+            self.size -= 1
+            return True
+        return False
+
+    def hash(self, key: str) -> int:
+        sum = 0
+        for char in key:
+            sum += ord(char)
+        return sum % self.array_size
+
+
+t = HashTable()
+t.insert("hello")
+print(t)

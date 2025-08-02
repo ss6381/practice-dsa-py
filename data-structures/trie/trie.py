@@ -1,42 +1,33 @@
-package trie
+from typing import List
 
-const numAlphabet int = 26
+num_alpha = 26
 
-type (
-	Node struct {
-		children [numAlphabet]*Node
-		isEnd    bool
-	}
 
-	Trie struct {
-		root *Node
-	}
-)
+class TrieNode:
+    def __init__(self):
+        self.is_leaf: bool = False
+        self.children: List[TrieNode] = [None] * num_alpha
 
-func (t *Trie) Insert(w string) {
-	wordLength := len(w)
-	currentNode := t.root
 
-	for i := 0; i < wordLength; i++ {
-		charIndex := w[i] - 'a'
-		if currentNode.children[charIndex] == nil {
-			currentNode.children[charIndex] = &Node{}
-		}
-		currentNode = currentNode.children[charIndex]
-	}
-	currentNode.isEnd = true
-}
+class Trie:
 
-func (t *Trie) Search(w string) bool {
-	wordLength := len(w)
-	currentNode := t.root
+    def __init__(self, root: TrieNode):
+        self.root = root
 
-	for i := 0; i < wordLength; i++ {
-		charIndex := w[i] - 'a'
-		if currentNode.children[charIndex] == nil {
-			return false
-		}
-		currentNode = currentNode.children[charIndex]
-	}
-	return currentNode.isEnd
-}
+    def insert(self, w: str):
+        curr: TrieNode = self.root
+        for character in w:
+            char_index = ord(character) - ord("a")
+            if curr.children[char_index] is None:
+                curr.children[char_index] = TrieNode()
+            curr = curr.children[char_index]
+        curr.is_leaf = True
+
+    def search(self, s: str) -> bool:
+        curr: TrieNode = self.root
+        for character in s:
+            char_index = ord(character) - ord("a")
+            if curr.children[char_index] is None:
+                return False
+            curr = curr.children[char_index]
+        return curr.is_leaf

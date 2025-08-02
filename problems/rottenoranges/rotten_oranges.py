@@ -9,60 +9,74 @@ Duo - 1st round
 """
 
 from enum import Enum
+from typing import List, Tuple, Set
+from collections import deque
+
 
 class OrangeState(Enum):
-	FRESH = 0
-	ROTTEN = 1
-	NONE = 2
+    NONE = 0
+    FRESH = 1
+    ROTTEN = 2
 
-class Solution:
 
-	def __init__(self, grid):
-		self.grid = grid
-		self.minutes = 0
-		self.fresh = 0
+def rotten_oranges(grid: List[List[int]]):
+    nodes = get_all_rotten(grid)
+    mins = bfs(grid, nodes)
+    if has_fresh_oranges(grid):
+        return -1
+    return mins
 
-	def rotten_oranges(self):
-		self.fresh = self.count_fresh_oranges()
-		if self.fresh == 0:
-			return 0
 
-		while self.fresh > 0:
-			self.rotten_neighbors()
-			self.minutes += 1
+def get_all_rotten(grid: List[List[int]]) -> List[Tuple[int, int]]:
+    result = []
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == OrangeState.ROTTEN.value:
+                result.append((i, j))
+    return result
 
-		return self.minutes
-	
-	def count_fresh_oranges(self):
-		count = 0
-		for i in range(len(self.grid)):
-			for j in range(len(self.grid[i])):
-				if self.grid[i][j] == OrangeState.FRESH.value:
-					count += 1
-		return count
-	
-	def rotten_neighbors(self):
-		for i in range(len(self.grid)):
-			for j in range(len(self.grid[i])):
-				if self.grid[i][j] == OrangeState.ROTTEN.value:
-					if i > 0 and self.grid[i-1][j] == OrangeState.FRESH.value:
-						self.grid[i-1][j] = OrangeState.ROTTEN.value
-						self.fresh -= 1
-					if i < len(self.grid) - 1 and self.grid[i+1][j] == OrangeState.FRESH.value:
-						self.grid[i+1][j] = OrangeState.ROTTEN.value
-						self.fresh -= 1
-					if j > 0 and self.grid[i][j-1] == OrangeState.FRESH.value:
-						self.grid[i][j-1] = OrangeState.ROTTEN.value
-						self.fresh -= 1
-					if j < len(self.grid[i]) - 1 and self.grid[i][j+1] == OrangeState.FRESH.value:
-						self.grid[i][j+1] = OrangeState.ROTTEN.value
-						self.fresh -= 1
 
-if __name__ == '__main__':
-	tests = [
-		[[0, 1, 2], [0, 1, 2], [0, 1, 2]],
-		[[2, 1, 1],[1, 1, 0],[0, 0, 1]],
-	]
-	for grid in tests:
-		s = Solution(grid)
-		print(s.rotten_oranges())
+def bfs(grid: List[List[int]], nodes: List[Tuple[int, int]]) -> int:
+    visit = set()
+    minutes = 0
+    q = deque(nodes)
+    while q:
+        rot = False
+        for _ in range(len(q)):
+            curr = q.popleft()
+            if curr not in visit:
+                visit.add(curr)
+                neighbors = rot_neighbors(grid=grid, visit=visit, pos=curr)
+                if len(neighbors) > 0:
+                    rot = True
+                for neighbor in neighbors:
+                    q.append(neighbor)
+        if rot:
+            minutes += 1
+    return minutes
+
+
+def rot_neighbors(
+    grid: List[List[int]], visit: Set[int], pos: Tuple[int, int]
+) -> List[Tuple]:
+    directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+    result = []
+    for dr, dc in directions:
+        row, col = pos[0] + dr, pos[1] + dc
+        if (
+            row in range(0, len(grid))
+            and col in range(0, len(grid[0]))
+            and grid[row][col] == OrangeState.FRESH.value
+            and (row, col) not in visit
+        ):
+            grid[row][col] = OrangeState.ROTTEN.value
+            result.append((row, col))
+    return result
+
+
+def has_fresh_oranges(grid: List[List[int]]) -> bool:
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == OrangeState.FRESH.value:
+                return True
+    return False

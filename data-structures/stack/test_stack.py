@@ -1,19 +1,37 @@
-package stack
+from stack import Stack
+import pytest
 
-import (
-	"fmt"
-	"testing"
+
+@pytest.fixture
+def stack():
+    return Stack()
+
+
+@pytest.mark.parametrize(
+    "push, pop_count, expected",
+    [
+        ([2, 6, 1, 5, 3, 1, 7], 0, [2, 6, 1, 5, 3, 1, 7]),
+        ([2, 6, 1, 5, 3, 1, 7], 2, [2, 6, 1, 5, 3]),
+    ],
 )
+def test_stack_success(stack: Stack, push, pop_count, expected):
+    for item in push:
+        stack.push(item)
+    for _ in range(pop_count):
+        stack.pop()
+    assert stack.items == expected
 
-func TestStack(t *testing.T) {
-	s := Stack{}
-	input := []int{1, 2, 3}
 
-	for _, i := range input {
-		s.Push(i)
-	}
-	fmt.Println(s.items)
-
-	fmt.Println(s.Pop())
-	fmt.Println(s.Pop())
-}
+@pytest.mark.parametrize(
+    "push, pop_count, error_msg",
+    [
+        ([], 1, "Cannot pop from an empty stack."),
+        ([2, 6], 3, "Cannot pop from an empty stack."),
+    ],
+)
+def test_stack_error(stack: Stack, push, pop_count, error_msg):
+    with pytest.raises(IndexError, match=error_msg):
+        for item in push:
+            stack.push(item)
+        for _ in range(pop_count):
+            stack.pop()

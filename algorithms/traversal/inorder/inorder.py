@@ -1,28 +1,24 @@
+from dataclasses import dataclass
+from typing import Optional, List
+
+
+@dataclass
 class TreeNode:
-	def __init__(self, x):
-		self.val = x
-		self.left = None
-		self.right = None
+    val: int
+    left: Optional["TreeNode"] = None
+    right: Optional["TreeNode"] = None
 
-class Solution:
 
-	def inorder_iterative(self, node):
-		pass
+def inorder(node: Optional[TreeNode], result: List[int] = []):
+    if not node:
+        return result
 
-	def inorder_recursive(self, node):
-		if node:
-			self.inorder_recursive(node.left)
-			print(node.val)
-			self.inorder_recursive(node.right)
+    inorder(node.left)
+    result.append(node.val)
+    inorder(node.right)
 
-if __name__ == "__main__":
-	s = Solution()
-	node = TreeNode(1)
-	node.left = TreeNode(2)
-	node.left.left = TreeNode(4)
-	node.left.right = TreeNode(5)
-	node.right = TreeNode(3)
-	node.right.left = TreeNode(6)
-	node.right.right = TreeNode(7)
+    return result
 
-	print(s.inorder_recursive(node))
+
+def inorder_iterative(node):
+    pass

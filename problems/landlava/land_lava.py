@@ -1,61 +1,19 @@
-package landlava
+# Tesla - 1st Round
 
-// Tesla - 1st Round
+# time complexity: O(N) = N + (M * 3N), where M is the maximum value which is some constant
+# and n is the length of the land array
+# space complexity: O(1)
+from typing import List
 
-import (
-	"math"
-)
 
-// time complexity: O(N) = N + (M * 3N), where M is the maximum value which is some constant
-// 	and n is the length of the land array
-// space complexity: O(1)
-func FillLava(land []int) int {
-	lava := 0
-	maximum := findMaximum(land)
-	for level := 0; level < maximum; level++ {
-		lava += calculateCurrentLevelLava(land, level)
-	}
-	return lava
-}
-
-func calculateCurrentLevelLava(land []int, level int) int {
-	currentLevelLava := len(land)
-
-	// delete all empty spaces before left block
-	for i := 0; i < len(land); i++ {
-		if land[i] > level {
-			break
-		}
-		currentLevelLava--
-	}
-	// no blocks in this level
-	if currentLevelLava == 0 {
-		return currentLevelLava
-	}
-
-	// delete all empty spaces after right block
-	for j := len(land) - 1; j >= 0; j-- {
-		if land[j] > level {
-			break
-		}
-		currentLevelLava--
-	}
-
-	// delete all blocks
-	for k := 0; k < len(land); k++ {
-		if land[k] > level {
-			currentLevelLava--
-		}
-	}
-	return currentLevelLava
-}
-
-func findMaximum(arr []int) int {
-	max := math.MinInt
-	for i := range arr {
-		if arr[i] > max {
-			max = arr[i]
-		}
-	}
-	return max
-}
+def fill_lava(land: List[int]) -> int:
+    result = 0
+    max_left, max_right = [0] * len(land), [0] * len(land)
+    for i in range(0, len(land)):
+        max_left[i] = max(land[:i]) if len(land[:i]) > 0 else 0
+        max_right[i] = max(land[i:]) if len(land[i:]) > 0 else 0
+    for i in range(len(land)):
+        curr_lava = min(max_left[i], max_right[i]) - land[i]
+        if curr_lava > 0:
+            result += curr_lava
+    return result

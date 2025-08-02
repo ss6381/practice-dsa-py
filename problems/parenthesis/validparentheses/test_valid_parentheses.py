@@ -1,35 +1,20 @@
-package parenthesis
+from valid_parentheses import is_valid_parenthesis
+import pytest
 
-import (
-	"testing"
+
+@pytest.mark.parametrize(
+    "s, expected",
+    [
+        ("()", True),
+        ("{}", True),
+        ("()[]{}", True),
+        ("(]", False),
+        ("([)]", False),
+        ("{[]}", True),
+        ("[[(]])", False),
+        ("{}}", False),
+        ("{({[{}({})]})}", True),
+    ],
 )
-
-func TestValidParentheses(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected bool
-	}{
-		{
-			name:     "valid input",
-			input:    "{}",
-			expected: true,
-		},
-		{
-			name:     "valid input mixed",
-			input:    "{({[{}({})]})}",
-			expected: true,
-		},
-		{
-			name:     "invalid input",
-			input:    "{}}",
-			expected: false,
-		},
-	}
-
-	for _, tt := range tests {
-		if tt.expected != IsValid(tt.input) {
-			t.Errorf("error")
-		}
-	}
-}
+def test_is_valid_parenthesis(s: str, expected: bool):
+    assert is_valid_parenthesis(s) == expected

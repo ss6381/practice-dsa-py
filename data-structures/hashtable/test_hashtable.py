@@ -1,32 +1,22 @@
-package hashtable
+from hashtable import HashTable
+import pytest
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
-)
+@pytest.fixture
+def table():
+    return HashTable()
 
-func TestHashTable(t *testing.T) {
-	tests := []struct {
-		name         string
-		insert       []string
-		search       []string
-		delete       []string
-		expectedSize int
-	}{
-		{
-			name:         "valid",
-			insert:       []string{"sparsh", "cindy", "isha"},
-			expectedSize: 3,
-		},
-	}
 
-	for _, tt := range tests {
-		table := Init()
-		for _, item := range tt.insert {
-			table.Insert(item)
-		}
-		table.Print()
-		assert.Equal(t, tt.expectedSize, table.size)
-	}
-}
+def test_hashtable(table: HashTable):
+    input = ["item1", "item2", "item3"]
+    for item in input:
+        table.insert(item)
+    print(table)
+    assert table.size == 3
+
+    assert table.search("item2") == 1, "item2 should be hashed to index 1."
+
+    table.delete("item2")
+    assert table.size == 2
+
+    assert table.search("item2") == -1, "item2 should be removed."

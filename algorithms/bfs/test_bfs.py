@@ -1,63 +1,21 @@
-package bfs
+from bfs import bfs, bfs_recursive, TreeNode
+import pytest
 
-import (
-	"testing"
 
-	"github.com/stretchr/testify/assert"
+@pytest.mark.parametrize(
+    "root, expected",
+    [
+        (TreeNode(val=42, left=TreeNode(val=12), right=TreeNode(val=46)), [42, 12, 46]),
+        (
+            TreeNode(
+                val=1,
+                left=TreeNode(val=2, left=TreeNode(val=4), right=TreeNode(val=5)),
+                right=TreeNode(val=3, left=TreeNode(val=6), right=TreeNode(val=7)),
+            ),
+            [1, 2, 3, 4, 5, 6, 7],
+        ),
+    ],
 )
-
-func TestBreadthFirstSearchGraph(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    [2]int // start, end
-		expected bool
-	}{
-		// {
-		// 	name:     "valid - connection",
-		// 	input:    [2]int{125, 253},
-		// 	expected: true,
-		// },
-		{
-			name:     "valid - no connection",
-			input:    [2]int{125, 253},
-			expected: false,
-		},
-	}
-
-	for _, tt := range tests {
-		g := Graph{}
-
-		// add nodes
-		start := tt.input[0]
-		end := tt.input[1]
-
-		g.AddVertex(start)
-		g.AddVertex(end)
-
-		startNode := getNode(g.nodes, start)
-		endNode := getNode(g.nodes, end)
-
-		assert.Equal(t, tt.expected, g.BreadthFirstSearch(startNode, endNode))
-	}
-}
-
-// func TestBreadthFirstSearch(t *testing.T) {
-// 	tests := []struct {
-// 		name     string
-// 		input    []int
-// 		expected []int
-// 	}{
-// 		{
-// 			name:     "happy path",
-// 			input:    []int{},
-// 			expected: []int{},
-// 		},
-// 	}
-
-// 	for _, tt := range tests {
-// 		n := &node{data: 10}
-// 		var result []int
-// 		n.BreadthFirstSearch(result)
-// 		assert.Equal(t, tt.expected, result)
-// 	}
-// }
+def test_bfs(root, expected):
+    assert bfs(root) == expected
+    assert bfs_recursive(root) == expected

@@ -1,51 +1,57 @@
-import collections
+from collections import deque
+from dataclasses import dataclass
+from typing import Optional, List
 
+
+@dataclass
 class TreeNode:
-	def __init__(self, x):
-		self.val = x
-		self.left = None
-		self.right = None
+    val: int
+    left: Optional["TreeNode"] = None
+    right: Optional["TreeNode"] = None
 
-class Solution:
 
-	def bfs_recursive(self, queue):
-		if not queue:
-			return
-		curr = queue.popleft()
-		print(curr.val)
-		if curr.left:
-			queue.append(curr.left)
-		if curr.right:
-			queue.append(curr.right)
-		self.bfs_recursive(queue)
+def bfs(root: TreeNode) -> List[int]:
+    """
+    Breadth-first search can be implemented iteratively using a queue.
+    We can do BFS over a binary tree, graph, adjacency list, and matrix.
+    """
+    result = []
+    q = deque([root])
+    while q:
+        curr: TreeNode = q.popleft()
+        result.append(curr.val)
+        if curr.left:
+            q.append(curr.left)
+        if curr.right:
+            q.append(curr.right)
+    return result
 
-	def bfs(self, node):
-		if not node:
-			return
-		q = collections.deque()
-		q.append(node)
-		self.bfs_recursive(q)
-		
-	def bfs_iterative(self, node):
-		q = collections.deque()
-		q.append(node)
-		while q:
-			curr = q.popleft()
-			print(curr.val)
-			if curr.left:
-				q.append(curr.left)
-			if curr.right:
-				q.append(curr.right)
-		return -1
 
-if __name__ == '__main__':
-	node = TreeNode(1)
-	node.left = TreeNode(2)
-	node.left.left = TreeNode(4)
-	node.left.right = TreeNode(5)
-	node.right = TreeNode(3)
-	node.right.left = TreeNode(6)
-	node.right.right = TreeNode(7)
-	s = Solution()
-	s.bfs(node)
-	s.bfs_iterative(node)
+def bfs_recursive(root: Optional[TreeNode]) -> List[int]:
+    """
+    Breadth-first search implemented recursively.
+    Note: True BFS is inherently iterative, but we can simulate it recursively
+    by processing nodes level by level.
+    """
+    if not root:
+        return []
+
+    result = []
+    level = [root]
+
+    def bfs_level(nodes: List[TreeNode]) -> None:
+        if not nodes:
+            return
+
+        next_level = []
+        for node in nodes:
+            result.append(node.val)
+            if node.left:
+                next_level.append(node.left)
+            if node.right:
+                next_level.append(node.right)
+
+        bfs_level(next_level)
+
+    bfs_level(level)
+    return result

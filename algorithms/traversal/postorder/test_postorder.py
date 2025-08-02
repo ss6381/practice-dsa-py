@@ -1,27 +1,25 @@
-package traversal
+from postorder import postorder, TreeNode
+import pytest
 
-import "testing"
+#        1
+#      /   \
+#     2     3
+#    / \   / \
+#   4   5 6   7
 
-func TestPostorderTraversal(t *testing.T) {
 
-}
-
-func TestPostorderTraversalRecursive(t *testing.T) {
-	tests := []struct {
-		name  string
-		input []int
-	}{
-		{
-			name:  "happy path",
-			input: []int{150, 50, 200, 70, 55, 25},
-		},
-	}
-
-	for _, tt := range tests {
-		n := &node{data: 100}
-		for _, val := range tt.input {
-			n.insert(val)
-		}
-		PostOrderTraversalRecursive(n)
-	}
-}
+@pytest.mark.parametrize(
+    "root, expected",
+    [
+        (
+            TreeNode(
+                val=1,
+                left=TreeNode(val=2, left=TreeNode(val=4), right=TreeNode(val=5)),
+                right=TreeNode(val=3, left=TreeNode(val=6), right=TreeNode(val=7)),
+            ),
+            [4, 5, 2, 6, 7, 3, 1],
+        )
+    ],
+)
+def test_postorder(root, expected):
+    assert postorder(root) == expected

@@ -1,79 +1,64 @@
 # Problem source: https://leetcode.com/problems/binary-tree-vertical-order-traversal/
+# Meta - 1st round
+# *Input:* [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
 """
-Meta - 1st round
-*Input:* [3,9,8,4,0,1,7,null,null,null,2,5] (0's right child is 2 and 1's left child is 5)
-
-     3
-    /\
-   /  \
-   9   8
-  /\  /\
- /  \/  \
- 4  01   7
-    /\
-   /  \
-   5   2
-
-*Output:*
-
-[
-  [4],
-  [9,5],
-  [3,0,1],
-  [8,2],
-  [7]
-]
-
-[
-  [3]
-]
-"""
-
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-
-import collections
-
-class Solution:
+def vertical_traversal(input: List[int]) -> List[List[int]]:
+    result: Dict[int, List[int]] = defaultdict(list)
+    min_column, max_column = float("inf"), float("-inf")
     
-    def vertical_traversal(self, root):
-        if not root:
-            return []
-        
-        column_items = collections.defaultdict(list)
-        queue = collections.deque([(0, root)])
+    queue = deque([(0, 0)])
+    while queue:
+        column, curr_index = queue.popleft()
+        result[column].append(input[curr_index])
 
-        min_column = float('inf')
-        max_column = float('-inf')
+        min_column, max_column = min(min_column, column), max(max_column, column)
 
-        result = []
+        left_index, right_index = (curr_index * 2) + 1, (curr_index * 2) + 2
+        if left_index < len(input) and input[left_index] is not None:
+            queue.append((column - 1, left_index))
+        if right_index < len(input) and input[right_index] is not None:
+            queue.append((column + 1, right_index))
 
-        while queue:
-            column, node = queue.popleft()
-            column_items[column].append(node.val)
+    return [result[level] for level in range(min_column, max_column + 1)]
 
-            min_column = min(min_column, column)
-            max_column = max(max_column, column)
-
-            if node.left:
-                queue.append((column-1, node.left))
-            if node.right:
-                queue.append((column+1, node.right))
-
-        for level in range(min_column, max_column+1):
-            result.append(column_items[level])
-        
-        return result
+"""
 
 
-if __name__ == '__main}}':
-    tests = [
-        [3,9,8,4,0,1,7,None,None,None,2,5],
-    ]
-    for test in tests:
-        s = Solution()
-        print(s.vertical_traversal(test))
+#      3
+#     /\\
+#    /  \\
+#    9   8
+#   /\  /\\
+#  /  \/  \\
+#  4  01   7
+#     /\\
+#    /  \\
+#    5   2
+
+# *Output:*
+
+# [
+#   [4],
+#   [9,5],
+#   [3,0,1],
+#   [8,2],
+#   [7]
+# ]
+from typing import List, Dict
+from collections import defaultdict, deque
+
+
+def vertical_traversal(input: List[int]) -> List[List[int]]:
+    """
+    Tradeoffs:
+    - Preorder vs. Postorder vs. Inorder vs. Level-order
+    - Track column_level using len(results) vs. maintaining min_col_level & max_col_level.
+    - Iterative vs. recursive approach.
+    Approach:
+    - Track min / max column level.
+    - Recursive approach using level order
+    """
+    # results: List[List[int]]= []
+    # left_index = (index * 2) + 1
+    # right_index = (index * 2) + 2
+    pass
